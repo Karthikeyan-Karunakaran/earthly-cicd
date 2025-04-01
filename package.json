@@ -1,0 +1,8 @@
+{
+  "name": "node-earthly-app",
+  "version": "1.0.0",
+  "description": "A simple Node.js app built with Earthly and Jenkins",
+  "main": "server.js",
+  "dependencies": {}
+}
+
