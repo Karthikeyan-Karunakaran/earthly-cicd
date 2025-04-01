@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/Karthikeyan-Karunakaran/earthly-cicd.git'
+                git branch: 'main', url: 'https://github.com/Karthikeyan-Karunakaran/earthly-cicd.git'
             }
         }
         stage('Build with Earthly') {
