@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build Docker Image with Earthly') {
             steps {
-                sh 'earthly --ci --output +docker=local'
+                sh 'earthly --ci +docker --load'
             }
         }
 
