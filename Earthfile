@@ -6,7 +6,7 @@ WORKDIR /app
 
 deps:
     COPY package.json ./
-    RUN npm ci
+    RUN npm install
 
 # Build target (inherits from +base)
 build:
