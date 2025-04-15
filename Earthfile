@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /app
 
 deps:
-    COPY package.json package-lock.json ./
+    COPY package.json ./
     RUN npm ci
 
 # Build target (inherits from +base)
