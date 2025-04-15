@@ -16,24 +16,24 @@ pipeline {
 
         stage('Build Docker Image with Earthly') {
             steps {
-                sh 'earthly --ci --output +docker'
-            }
-        }
-
-        stage('Docker Login & Push') {
-            steps {
                 script {
                     // Get the commit count to use in version tagging
                     def commitCount = sh(script: "git rev-list --count HEAD", returnStdout: true).trim()
                     def versionTag = "v1.0.${commitCount}"
                     env.VERSION_TAG = versionTag
-                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker tag $DOCKER_IMAGE:$VERSION_TAG $DOCKER_IMAGE:$VERSION_TAG
-                            docker push $DOCKER_IMAGE:$VERSION_TAG
-                        """
-                    }
+                    sh 'earthly --ci --output +docker'
+                }
+            }
+        }
+
+        stage('Docker Login & Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag $DOCKER_IMAGE:$VERSION_TAG $DOCKER_IMAGE:$VERSION_TAG
+                        docker push $DOCKER_IMAGE:$VERSION_TAG
+                    """
                 }
             }
         }
