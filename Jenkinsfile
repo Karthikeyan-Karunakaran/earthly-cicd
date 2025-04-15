@@ -53,6 +53,7 @@ pipeline {
     post {
         cleanup {
             sh 'docker system prune -f'
+            
         }
     }
 }
