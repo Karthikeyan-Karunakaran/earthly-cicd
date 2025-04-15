@@ -21,7 +21,7 @@ pipeline {
                     def commitCount = sh(script: "git rev-list --count HEAD", returnStdout: true).trim()
                     def versionTag = "v1.0.${commitCount}"
                     env.VERSION_TAG = versionTag
-                    sh 'earthly --ci --output +docker'
+                    sh "earthly --ci --output +docker --VERSION ${env.VERSION_TAG}"
                 }
             }
         }
