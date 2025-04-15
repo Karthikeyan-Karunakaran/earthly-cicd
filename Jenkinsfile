@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials-id' // Jenkins credentials ID for Docker Hub
         DOCKER_IMAGE = 'karthikeyank2004/myapp'
-        IMAGE_TAG = 'latest'
         CONTAINER_NAME = 'earthly-app'
     }
 
@@ -23,12 +22,18 @@ pipeline {
 
         stage('Docker Login & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker tag $DOCKER_IMAGE:$IMAGE_TAG $DOCKER_IMAGE:$IMAGE_TAG
-                        docker push $DOCKER_IMAGE:$IMAGE_TAG
-                    """
+                script {
+                    // Get the commit count to use in version tagging
+                    def commitCount = sh(script: "git rev-list --count HEAD", returnStdout: true).trim()
+                    def versionTag = "v1.0.${commitCount}"
+                    env.VERSION_TAG = versionTag
+                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh """
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker tag $DOCKER_IMAGE:$VERSION_TAG $DOCKER_IMAGE:$VERSION_TAG
+                            docker push $DOCKER_IMAGE:$VERSION_TAG
+                        """
+                    }
                 }
             }
         }
@@ -36,10 +41,10 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 sh """
-                    docker pull $DOCKER_IMAGE:$IMAGE_TAG
+                    docker pull $DOCKER_IMAGE:$VERSION_TAG
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 3000:3000 $DOCKER_IMAGE:$IMAGE_TAG
+                    docker run -d --name $CONTAINER_NAME -p 3000:3000 $DOCKER_IMAGE:$VERSION_TAG
                 """
             }
         }
