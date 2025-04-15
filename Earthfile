@@ -16,7 +16,7 @@ build:
     # RUN npm test  # Uncomment this line if you have tests
 
 # Docker target: creates and saves image
-docker:
+docker(VERSION ?= "latest"):
     FROM +build
     ENTRYPOINT ["node", "server.js"]
-    SAVE IMAGE karthikeyank2004/myapp:latest
+    SAVE IMAGE karthikeyank2004/myapp:${VERSION}
