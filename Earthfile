@@ -18,5 +18,5 @@ build:
 # Docker target: creates and saves image
 docker:
     FROM +build
-    ENTRYPOINT ["node", "index.js"]
+    ENTRYPOINT ["node", "server.js"]
     SAVE IMAGE karthikeyank2004/myapp:latest
